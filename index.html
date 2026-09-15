@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0f3d3e">
+  <meta name="description" content="Tuleva minä – 66 päivän tutkimukseen perustuva ohjelma, jossa opit priorisoimaan tulevan itsesi tarpeet pienillä päivittäisillä teoilla.">
+  <title>Tuleva minä</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a class="skip" href="#main">Siirry sisältöön</a>
+
+  <header class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">◐</span>
+        <span class="brand-name">Tuleva minä</span>
+      </div>
+      <div class="topbar-right" id="topbar-right"></div>
+    </div>
+  </header>
+
+  <main id="main" class="main" aria-live="polite"></main>
+
+  <nav class="bottomnav" id="bottomnav" aria-label="Päänavigaatio" hidden>
+    <button data-view="today" class="navbtn" aria-current="page">
+      <span class="navicon" aria-hidden="true">☀</span><span>Tänään</span>
+    </button>
+    <button data-view="progress" class="navbtn">
+      <span class="navicon" aria-hidden="true">◔</span><span>Edistyminen</span>
+    </button>
+    <button data-view="letter" class="navbtn">
+      <span class="navicon" aria-hidden="true">✉</span><span>Kirje</span>
+    </button>
+    <button data-view="research" class="navbtn">
+      <span class="navicon" aria-hidden="true">⌕</span><span>Tutkimus</span>
+    </button>
+    <button data-view="settings" class="navbtn">
+      <span class="navicon" aria-hidden="true">⚙</span><span>Asetukset</span>
+    </button>
+  </nav>
+
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="js/content.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

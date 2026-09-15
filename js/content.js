@@ -1,0 +1,232 @@
+/* Tuleva minä – ohjelman sisältö
+   Jokaiselle 66 päivälle: yksi tutkimukseen perustuva vinkki + yksi yleinen mikroteko.
+   Lisäksi painopistealueiden mikrotekopoolit ja tutkimuslähteet. */
+window.CONTENT = (function () {
+  const PROGRAM_DAYS = 66; // Lally ym. 2010: mediaani 66 päivää automaattisuuteen (vaadittu minimi 65)
+
+  const PHASES = [
+    { from: 1,  to: 10, name: "Tutustu tulevaan itseesi",      short: "Yhteys",       desc: "Rakennetaan elävä ja läheinen kuva tulevasta minästä. Mitä todellisempi hän on, sitä helpompi on toimia hänen hyväkseen." },
+    { from: 11, to: 22, name: "Jos–niin ja pienet teot",       short: "Suunnitelmat", desc: "Siirretään päätökset tahdonvoimasta tilanteisiin: vihje, pieni teko, toisto." },
+    { from: 23, to: 35, name: "Sitoumukset ja houkutukset",    short: "Sitoumukset",  desc: "Nykyinen minä sitoo tulevan minän kädet hyvässä: sitoumuslaitteet, houkutusten niputus, WOOP." },
+    { from: 36, to: 48, name: "Identiteetti ja arvot",         short: "Identiteetti", desc: "Teot muuttuvat osaksi sitä, kuka olet. Terveys, raha, suhteet ja taidot tulevan itsen pääomana." },
+    { from: 49, to: 60, name: "Kestävyys ja palautuminen",     short: "Kestävyys",    desc: "Itsemyötätunto, tasanteet, retkahdussuunnitelmat. Väliin jäänyt päivä ei nollaa mitään." },
+    { from: 61, to: 66, name: "Vakiinnuta ja katso eteenpäin", short: "Vakiinnutus",  desc: "Tavan pysyvä koti, seuraava askel ja kirjeen avaaminen." },
+  ];
+
+  const AREAS = [
+    { id: "terveys", name: "Terveys ja keho", emoji: "🫀" },
+    { id: "raha",    name: "Raha",            emoji: "🪙" },
+    { id: "oppiminen", name: "Oppiminen ja taidot", emoji: "📚" },
+    { id: "suhteet", name: "Ihmissuhteet",    emoji: "🤝" },
+    { id: "tyo",     name: "Työ ja opinnot",  emoji: "🧭" },
+    { id: "mieli",   name: "Mieli ja uni",    emoji: "🌙" },
+  ];
+
+  // Lähteet: avain -> viite
+  const SOURCES = {
+    lally2010: { cite: "Lally, van Jaarsveld, Potts & Wardle (2010). How are habits formed: Modelling habit formation in the real world. European Journal of Social Psychology, 40(6), 998–1009.", url: "https://onlinelibrary.wiley.com/doi/10.1002/ejsp.674", summary: "96 osallistujaa toisti valitsemaansa tekoa päivittäin samassa tilanteessa 12 viikon ajan. Automaattisuus saavutettiin keskimäärin 66 päivässä (vaihteluväli 18–254). Yksi väliin jäänyt päivä ei juuri haitannut." },
+    hershfield2009: { cite: "Ersner-Hershfield, Garton, Ballard, Samanez-Larkin & Knutson (2009). Don't stop thinking about tomorrow: Individual differences in future self-continuity account for saving. Judgment and Decision Making, 4(4), 280–286.", url: "https://www.cambridge.org/core/journals/judgment-and-decision-making/article/dont-stop-thinking-about-tomorrow-individual-differences-in-future-selfcontinuity-account-for-saving/3C8F3579FBEC6011191AE966A6E51809", summary: "Mitä läheisemmäksi ihminen koki tulevan itsensä, sitä enemmän hän säästi ja sitä vähemmän diskonttasi tulevia palkkioita. Aivokuvantamisessa tuleva minä muistutti aktivaatioltaan vierasta ihmistä." },
+    hershfield2011: { cite: "Hershfield, Goldstein, Sharpe, Fox, Yeykelis, Carstensen & Bailenson (2011). Increasing saving behavior through age-progressed renderings of the future self. Journal of Marketing Research, 48, S23–S37.", url: "https://clear.dol.gov/study/increasing-saving-behavior-through-age-progressed-renderings-future-self-hershfield-et-al-2011", summary: "Ikäprogressoidun oman kasvokuvan näkeminen sai osallistujat kohdentamaan selvästi enemmän rahaa eläkesäästöihin." },
+    rutchick2018: { cite: "Rutchick, Slepian, Reyes, Pleskus & Hershfield (2018). Future self-continuity is associated with improved health and increases exercise behavior. Journal of Experimental Psychology: Applied, 24(1), 72–80.", url: "https://www.halhershfield.com/research-index", summary: "Kirjeen kirjoittaminen itselle 20 vuoden päähän (vs. 3 kk) lisäsi liikuntaa seuraavina päivinä." },
+    blouin2015: { cite: "Blouin-Hudon & Pychyl (2015). Experiencing the temporally extended self: Vivid mental imagery, affect and future self-continuity predict academic procrastination. Personality and Individual Differences, 86, 50–56.", url: "https://www.sciencedirect.com/science/article/abs/pii/S0191886915003840", summary: "583 opiskelijaa: elävät mielikuvat ja myönteinen tunnetila liittyivät vahvempaan tulevaisuusyhteyteen, joka puolestaan ennusti vähäisempää lykkäämistä." },
+    blouin2017: { cite: "Blouin-Hudon & Pychyl (2017). A mental imagery intervention to increase future self-continuity and reduce procrastination. Applied Psychology, 66(2), 326–352.", url: "https://iaap-journals.onlinelibrary.wiley.com/doi/abs/10.1111/apps.12088", summary: "Ohjattu mielikuvaharjoitus tulevasta itsestä lisäsi tulevaisuusyhteyttä ja vähensi lykkäämistä." },
+    gollwitzer2006: { cite: "Gollwitzer & Sheeran (2006). Implementation intentions and goal achievement: A meta-analysis of effects and processes. Advances in Experimental Social Psychology, 38, 69–119.", url: "https://www.semanticscholar.org/paper/c4deb3507fe725ce6363c1735f1ba83bab20d665", summary: "94 tutkimusta, yli 8 000 osallistujaa: jos–niin-suunnitelmat ('kun X, teen Y') paransivat tavoitteiden saavuttamista keskisuurella–suurella vaikutuksella (d = 0,65)." },
+    wang2021: { cite: "Wang, Wang & Gai (2021). A meta-analysis of the effects of mental contrasting with implementation intentions on goal attainment. Frontiers in Psychology, 12, 565202.", url: "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8149892/", summary: "WOOP-menetelmä (toive, lopputulos, este, suunnitelma) lisäsi tavoitteiden saavuttamista useilla elämänalueilla." },
+    milkman2014: { cite: "Milkman, Minson & Volpp (2014). Holding the Hunger Games hostage at the gym: An evaluation of temptation bundling. Management Science, 60(2), 283–299.", url: "https://pubsonline.informs.org/doi/10.1287/mnsc.2013.1784", summary: "Kun houkutteleva äänikirja oli saatavilla vain kuntosalilla, käynnit lisääntyivät 51 %." },
+    rogers2014: { cite: "Rogers, Milkman & Volpp (2014). Commitment devices: Using initiatives to change behavior. JAMA, 311(20), 2065–2066.", url: "https://jamanetwork.com/journals/jama/fullarticle/1871105", summary: "Vapaaehtoiset, etukäteen asetetut sitoumukset (raha, sosiaalinen paine, rajoitukset) auttavat ihmisiä toimimaan pitkän aikavälin etunsa mukaisesti." },
+    ariely2002: { cite: "Ariely & Wertenbroch (2002). Procrastination, deadlines, and performance: Self-control by precommitment. Psychological Science, 13(3), 219–224.", url: "https://journals.sagepub.com/doi/10.1111/1467-9280.00441", summary: "Itse asetetut sitovat välitakarajat paransivat suoritusta verrattuna vapaaseen aikatauluun." },
+    thaler2004: { cite: "Thaler & Benartzi (2004). Save More Tomorrow: Using behavioral economics to increase employee saving. Journal of Political Economy, 112(S1), S164–S187.", url: "https://www.journals.uchicago.edu/doi/10.1086/380085", summary: "Ihmiset sitoutuivat helpommin säästöjen korotuksiin, jotka alkoivat vasta tulevista palkankorotuksista. Säästöaste nousi 3,5 %:sta 13,6 %:iin." },
+    dai2014: { cite: "Dai, Milkman & Riis (2014). The fresh start effect: Temporal landmarks motivate aspirational behavior. Management Science, 60(10), 2563–2582.", url: "https://pubsonline.informs.org/doi/10.1287/mnsc.2014.1901", summary: "Ajalliset virstanpylväät (viikon, kuun, vuoden alku, syntymäpäivät) lisäävät tavoitteellista toimintaa." },
+    wood2002: { cite: "Wood, Quinn & Kashy (2002). Habits in everyday life: Thought, emotion, and action. Journal of Personality and Social Psychology, 83(6), 1281–1297.", url: "https://psycnet.apa.org/doi/10.1037/0022-3514.83.6.1281", summary: "Noin 43 % arjen teoista toistui päivittäin samassa kontekstissa ilman tietoista harkintaa." },
+    wood2016: { cite: "Wood & Rünger (2016). Psychology of habit. Annual Review of Psychology, 67, 289–314.", url: "https://www.annualreviews.org/doi/10.1146/annurev-psych-122414-033417", summary: "Tavat syntyvät kontekstivihjeen ja toiston kautta; välittömät palkkiot vahvistavat niitä tehokkaammin kuin kaukaiset hyödyt." },
+    duckworth2016: { cite: "Duckworth, Gendler & Gross (2016). Situational strategies for self-control. Perspectives on Psychological Science, 11(1), 35–55.", url: "https://journals.sagepub.com/doi/10.1177/1745691615623247", summary: "Tilanteen valinta ja muokkaus (houkutusten poisto, vihjeiden lisäys) toimii itsesäätelyssä paremmin kuin tahdonvoiman käyttö houkutuksen hetkellä." },
+    breines2012: { cite: "Breines & Chen (2012). Self-compassion increases self-improvement motivation. Personality and Social Psychology Bulletin, 38(9), 1133–1143.", url: "https://journals.sagepub.com/doi/10.1177/0146167212445599", summary: "Itsemyötätuntoinen suhtautuminen epäonnistumiseen lisäsi halua parantaa ja korjata, toisin kuin itsekritiikki." },
+    bryan2011: { cite: "Bryan, Walton, Rogers & Dweck (2011). Motivating voter turnout by invoking the self. PNAS, 108(31), 12653–12656.", url: "https://www.pnas.org/doi/10.1073/pnas.1103343108", summary: "Identiteettimuotoilu ('olla äänestäjä') lisäsi toimintaa enemmän kuin tekomuotoilu ('äänestää')." },
+    harkin2016: { cite: "Harkin ym. (2016). Does monitoring goal progress promote goal attainment? A meta-analysis of the experimental evidence. Psychological Bulletin, 142(2), 198–229.", url: "https://eprints.whiterose.ac.uk/id/eprint/94825/3/WRRO_94825.pdf", summary: "138 tutkimusta: edistymisen seuraaminen lisäsi tavoitteiden saavuttamista, erityisesti kun se kirjattiin tai jaettiin muille." },
+    phillips2016: { cite: "Phillips & Gardner (2016). Habitual exercise instigation (vs. execution) predicts healthy adults' exercise frequency. Health Psychology, 35(1), 69–77.", url: "https://psycnet.apa.org/doi/10.1037/hea0000249", summary: "Tavaksi muodostuu erityisesti tekemisen aloittaminen; toteutuksen kesto voi vaihdella." },
+    gardner2012: { cite: "Gardner, Lally & Wardle (2012). Making health habitual: The psychology of 'habit-formation' and general practice. British Journal of General Practice, 62(605), 664–666.", url: "https://bjgp.org/content/62/605/664", summary: "Käytännön ohje: valitse pieni teko, kiinnitä se päivittäiseen vihjeeseen, toista, ja odota noin 10 viikkoa." },
+    frederick2002: { cite: "Frederick, Loewenstein & O'Donoghue (2002). Time discounting and time preference: A critical review. Journal of Economic Literature, 40(2), 351–401.", url: "https://www.aeaweb.org/articles?id=10.1257/002205102320161311", summary: "Ihmiset diskonttaavat tulevia hyötyjä jyrkästi ja epäjohdonmukaisesti: lähitulevaisuus painaa suhteettomasti." },
+    bartels2011: { cite: "Bartels & Urminsky (2011). On intertemporal selfishness: How the perceived instability of identity underlies impatient consumption. Journal of Consumer Research, 38(1), 182–198.", url: "https://academic.oup.com/jcr/article/38/1/182/1786432", summary: "Kun ihmiset kokivat identiteettinsä pysyvän yhtenäisenä ajan yli, he olivat kärsivällisempiä ja säästivät enemmän." },
+    peetz2013: { cite: "Peetz & Wilson (2013). The post-birthday world: Consequences of temporal landmarks for temporal self-appraisal and motivation. Journal of Personality and Social Psychology, 104(2), 249–266.", url: "https://psycnet.apa.org/doi/10.1037/a0030477", summary: "Virstanpylväät jäsentävät aikaa ja voivat tuoda tulevan itsen lähemmäksi tai kauemmaksi motivaation kannalta." },
+    sheldon2006: { cite: "Sheldon & Lyubomirsky (2006). How to increase and sustain positive emotion: The effects of expressing gratitude and visualizing best possible selves. Journal of Positive Psychology, 1(2), 73–82.", url: "https://www.tandfonline.com/doi/abs/10.1080/17439760500510676", summary: "'Paras mahdollinen minä' -kirjoitusharjoitus lisäsi myönteisiä tunteita ja motivaatiota." },
+    emmons2003: { cite: "Emmons & McCullough (2003). Counting blessings versus burdens: An experimental investigation of gratitude and subjective well-being in daily life. Journal of Personality and Social Psychology, 84(2), 377–389.", url: "https://psycnet.apa.org/doi/10.1037/0022-3514.84.2.377", summary: "Kiitollisuuden kirjaaminen lisäsi hyvinvointia ja jopa liikuntaa verrattuna kontrolliryhmiin." },
+    johnson2003: { cite: "Johnson & Goldstein (2003). Do defaults save lives? Science, 302(5649), 1338–1339.", url: "https://www.science.org/doi/10.1126/science.1091721", summary: "Oletusvaihtoehto määrää lopputuloksen valtaosalle ihmisistä; muuta oletus tulevan itsen puolelle." },
+    waldinger2023: { cite: "Waldinger & Schulz (2023). The Good Life: Lessons from the World's Longest Scientific Study of Happiness. Harvard Study of Adult Development.", url: "https://www.adultdevelopmentstudy.org/", summary: "Yli 80 vuoden seurannassa hyvät ihmissuhteet ennustivat terveyttä ja onnellisuutta vahvimmin." },
+    christakis2007: { cite: "Christakis & Fowler (2007). The spread of obesity in a large social network over 32 years. New England Journal of Medicine, 357, 370–379.", url: "https://www.nejm.org/doi/full/10.1056/NEJMsa066082", summary: "Elintavat leviävät sosiaalisissa verkostoissa: ympäristön ihmiset muokkaavat todennäköisyyksiäsi." },
+    marlatt2005: { cite: "Marlatt & Donovan (2005). Relapse Prevention: Maintenance Strategies in the Treatment of Addictive Behaviors (2nd ed.). Guilford.", url: "https://www.guilford.com/books/Relapse-Prevention/Marlatt-Donovan/9781593856410", summary: "Retkahdus on tapahtuma, ei paluu alkuun. 'Kaikki tai ei mitään' -ajattelun välttäminen ennustaa parempaa pysyvyyttä." },
+    milkman2021: { cite: "Milkman ym. (2021). Megastudies improve the impact of applied behavioural science. Nature, 600, 478–483.", url: "https://www.nature.com/articles/s41586-021-04128-4", summary: "54 interventiota, 61 000 osallistujaa: suunnittelukehotukset, muistutukset ja pienet välittömät palkkiot lisäsivät kuntosalikäyntejä." },
+  };
+
+  // 66 päivän vinkit ja yleiset mikroteot
+  const DAYS = [
+    // Vaihe 1: Tutustu tulevaan itseesi (1–10)
+    { tip: "Tuleva minä on oikea ihminen. Aivokuvantamisessa tuleva minä aktivoi samoja alueita kuin vieras ihminen – siksi hänen tarpeensa on helppo ohittaa. Mitä läheisemmäksi hänet tunnet, sitä luontevampaa on toimia hänen hyväkseen.", src: "hershfield2009", action: "Sulje silmät kahdeksi minuutiksi ja kuvittele itsesi kymmenen vuoden päästä: missä hän herää, mitä hän toivoo sinun tehneen tänään. Kirjoita yksi lause.", minutes: 3 },
+    { tip: "Miksi 66 päivää? Lallyn tutkimuksessa uusi teko muuttui automaattiseksi keskimäärin 66 päivässä, kun sitä toistettiin samassa tilanteessa. Yksi väliin jäänyt päivä ei nollannut edistymistä.", src: "lally2010", action: "Valitse yksi alle kahden minuutin teko, jonka teet joka päivä samassa tilanteessa. Tämä on ankkuritekosi – tarkista, että se on tallennettu asetuksiin.", minutes: 2 },
+    { tip: "Elävyys ratkaisee. Mitä yksityiskohtaisemmin kuvittelet tulevan itsesi, sitä vahvempi yhteys ja sitä vähemmän lykkäät. Sumea tulevaisuus on helppo ohittaa; tarkka ei.", src: "blouin2015", action: "Kirjoita kolme konkreettista yksityiskohtaa arjestasi vuoden päästä: aamu, päivän työ, ilta.", minutes: 4 },
+    { tip: "Kirje tulevalle itselle toimii. Kokeessa 20 vuoden päähän kirjoittaneet liikkuivat seuraavina päivinä enemmän kuin kolmen kuukauden päähän kirjoittaneet. Kirjeesi avataan päivänä 66.", src: "rutchick2018", action: "Lue kirjeesi alku uudelleen ja lisää yksi rivi: \"Tänään tein sinulle…\"", minutes: 3 },
+    { tip: "Aivosi diskonttaavat tulevaisuutta jyrkästi: 10 euroa nyt tuntuu paremmalta kuin 15 viikon päästä, vaikka vuoden ja vuosi+viikon välillä valitsisit toisin. Ilmiötä ei tarvitse voittaa, vaan valinnat voi muotoilla uudelleen.", src: "frederick2002", action: "Kun teet tänään valinnan \"nyt vai myöhemmin\", kysy ääneen: \"Kumpaa tuleva minä kiittää?\" Valitse kerran hänen puolestaan.", minutes: 1 },
+    { tip: "Kasvot tekevät tulevasta minästä todellisen. Ikäprogressoidun oman kuvan nähneet kohdensivat selvästi enemmän rahaa eläkesäästöihin.", src: "hershfield2011", action: "Katso peiliin ja kuvittele kaksikymmentä vuotta lisää: rypyt, ryhti, katse. Sano hänelle yksi lupaus.", minutes: 2 },
+    { tip: "Viikkokatsaus. Mitä yhtenäisemmäksi koet itsesi ajan yli, sitä kärsivällisempi olet ja sitä enemmän säästät. Yhteys rakentuu toistolla, ei yhdellä oivalluksella.", src: "bartels2011", action: "Kirjaa viikolta yksi asia, jonka teit tulevalle itsellesi, ja yksi, jonka jätit tekemättä. Ilman syyllisyyttä – tämä on tietoa, ei tuomio.", minutes: 4 },
+    { tip: "Nykyinen minä on menneen minän tuleva minä. Kiitollisuuden kirjaaminen lisää hyvinvointia ja jopa liikuntaa – ja se vahvistaa ketjua menneen, nykyisen ja tulevan välillä.", src: "emmons2003", action: "Kiitä mennyttä itseäsi yhdestä asiasta, josta hyödyt juuri nyt. Kirjoita se ylös.", minutes: 2 },
+    { tip: "Uuden alun vaikutus: maanantait, kuun alut ja syntymäpäivät nostavat motivaatiota. Käytä virstanpylväitä tietoisesti sen sijaan, että odottaisit niitä.", src: "dai2014", action: "Katso kalenterista seuraava \"uusi alku\" ja päätä, minkä teon kiinnität siihen.", minutes: 3 },
+    { tip: "Tulevan itsen tarpeet ovat tylsiä: uni, ravinto, raha, suhteet, taidot. Sankaritekoja tarvitaan harvoin; toistuvia pikkuvalintoja aina.", src: "gardner2012", action: "Listaa tulevan itsesi viisi perustarvetta ja ympyröi se, joka on nyt heikoin.", minutes: 3 },
+    // Vaihe 2: Jos–niin ja pienet teot (11–22)
+    { tip: "Jos–niin-suunnitelma on tutkituimpia tehokeinoja: \"Kun X tapahtuu, teen Y.\" Se siirtää päätöksen tilanteeseen, jolloin tahdonvoimaa ei tarvita. 94 tutkimuksessa vaikutus oli keskisuuri–suuri.", src: "gollwitzer2006", action: "Kirjoita yksi jos–niin-suunnitelma huomiselle: \"Kun ___, niin ___.\"", minutes: 2 },
+    { tip: "Konteksti on tavan moottori. Noin 43 % arjen teoista tehdään automaattisesti samassa paikassa ja tilanteessa. Vihjeen on toistuttava joka päivä.", src: "wood2002", action: "Tarkista ankkurisi: onko vihje joka päivä sama? Tarkenna se muotoon paikka + aika + edeltävä teko.", minutes: 2 },
+    { tip: "Tapojen pinoaminen: kiinnitä uusi teko olemassa olevan tavan perään. Vanha tapa toimii luotettavana vihjeenä uudelle.", src: "gardner2012", action: "Muotoile: \"Kun olen [olemassa oleva tapa], teen [uusi teko].\" Kokeile tänään kerran.", minutes: 2 },
+    { tip: "Viikkokatsaus. Jos teko jäi väliin, vika on suunnitelmassa, ei sinussa: vihje oli epäselvä, teko liian iso tai ympäristö esti. Suunnitelmaa voi korjata.", src: "lally2010", action: "Pienennä yksi teko puoleen. Pienempi mutta joka päivä voittaa suuremman satunnaisen.", minutes: 2 },
+    { tip: "Kitka ratkaisee enemmän kuin tahto. Tilanteen muokkaus – houkutuksen poisto, vihjeen lisäys – toimii paremmin kuin taistelu houkutuksen hetkellä.", src: "duckworth2016", action: "Siirrä yksi esine: tuo hyvä näkyville (vesipullo, kirja, lenkkarit) ja vie houkutus pois silmistä.", minutes: 2 },
+    { tip: "Kahden minuutin sääntö: harjoittele tavan alkua, älä sen kokoa. Automaattisuus syntyy toistojen määrästä, ei niiden kestosta.", src: "lally2010", action: "Tee ankkuritekosi vain kahden minuutin versiona ja lopeta, kun se tuntuu hyvältä.", minutes: 2 },
+    { tip: "Aloitustapa vs. suoritustapa: tavaksi muodostuu erityisesti aloittaminen. Kun aloitus on automaattinen, kesto saa vaihdella.", src: "phillips2016", action: "Kirjaa tänään vain aloitus: \"Aloitin klo __.\" Kesto ei ole tärkeä.", minutes: 1 },
+    { tip: "Yksi väliin jäänyt päivä laski automaattisuutta alle puoli pistettä ja palautui nopeasti. Sääntö on yksinkertainen: älä jätä väliin kahta peräkkäin.", src: "lally2010", action: "Tee pelastussuunnitelma: \"Jos päivä jää väliin, niin seuraavana aamuna teen ___ ensimmäisenä.\"", minutes: 2 },
+    { tip: "Aamut ovat tulevan itsen puolella. Ennen ensimmäistä ilmoitusta päätöksesi ovat vielä omiasi.", src: "duckworth2016", action: "Tee huomenna yksi asia tulevalle itsellesi ennen kuin avaat puhelimen.", minutes: 2 },
+    { tip: "Oletukset voittavat. Ihmiset pysyvät oletusvaihtoehdossa, olipa se hyvä tai huono. Automatisoitu päätös on lahja tulevalle itselle.", src: "johnson2003", action: "Automatisoi yksi toistuva päätös: tilisiirto, ateria, vaatteet tai herätys.", minutes: 5 },
+    { tip: "Viikkokatsaus. Seuranta toimii: 138 tutkimuksessa edistymisen kirjaaminen lisäsi tavoitteiden saavuttamista, erityisesti kun se jaettiin muille.", src: "harkin2016", action: "Kerro yhdelle ihmiselle, mitä harjoittelet. Pyydä häntä kysymään viikon päästä.", minutes: 3 },
+    { tip: "Jos–niin toimii myös esteisiin: \"Jos väsyttää, teen pienimmän version.\" Este-suunnitelma tehdään ennen estettä, ei sen keskellä.", src: "gollwitzer2006", action: "Kirjoita este-jos–niin: \"Jos ___ (este), niin ___.\"", minutes: 2 },
+    // Vaihe 3: Sitoumukset ja houkutukset (23–35)
+    { tip: "Sitoumuslaitteet: itse asetetut rajat, joiden rikkomisella on hinta, parantavat suoritusta. Nykyinen minä sitoo tulevan minän kädet – hyvässä.", src: "rogers2014", action: "Aseta yksi sitoumus tälle viikolle (raha, aika tai lupaus ystävälle), jonka rikkomisesta seuraa pieni mutta todellinen hinta.", minutes: 3 },
+    { tip: "Houkutusten niputus: salli mieluisa asia vain hyödyllisen teon aikana. Kun äänikirja oli saatavilla vain kuntosalilla, käynnit lisääntyivät 51 %.", src: "milkman2014", action: "Nimeä pari: \"Saan ___ vain kun teen ___.\" Kokeile tänään.", minutes: 2 },
+    { tip: "Save More Tomorrow: ihmiset sitoutuvat helpommin tuleviin uhrauksiin kuin nykyisiin. Sovi siis nyt parannuksesta, joka alkaa myöhemmin.", src: "thaler2004", action: "Päätä yksi parannus, joka alkaa ensi kuussa (säästöprosentti, harjoitusmäärä, nukkumaanmenoaika), ja kirjaa se kalenteriin.", minutes: 3 },
+    { tip: "WOOP: toive, paras lopputulos, sisäinen este, suunnitelma. Pelkkä myönteinen kuvittelu heikentää toimintaa; esteen kanssa kontrastointi vahvistaa sitä.", src: "wang2021", action: "Tee WOOP kolmessa minuutissa: toive – paras lopputulos – sisäinen este – jos–niin-suunnitelma.", minutes: 3 },
+    { tip: "Ympäristö on luotettavampi kuin motivaatio. Muotoile koti ja työpiste tulevan itsen puolelle, niin päätöksiä tarvitaan vähemmän.", src: "duckworth2016", action: "Poista yksi houkutus näkyviltä ja lisää yksi vihje näkyville.", minutes: 3 },
+    { tip: "Viikkokatsaus. Olet ohjelman 42 %:ssa. Automaattisuus kasvaa nopeimmin alussa ja tasaantuu sitten – \"tylsyys\" on merkki edistyksestä, ei pysähtymisestä.", src: "lally2010", action: "Arvioi: tuntuuko ankkuriteko jo \"vain siltä, mitä teen\"? Anna numero ja jatka.", minutes: 2 },
+    { tip: "Itse asetetut aikarajat toimivat. Opiskelijat, jotka sitoivat itsensä välitakarajoihin, suoriutuivat paremmin kuin ne, joilla oli täysi vapaus.", src: "ariely2002", action: "Aseta yhdelle keskeneräiselle asialle sitova välitakaraja tälle viikolle ja kerro se jollekulle.", minutes: 2 },
+    { tip: "Julkiset lupaukset pitävät paremmin kuin yksityiset. Sosiaalinen sitoumus on halvin sitoumuslaite.", src: "rogers2014", action: "Sovi yksi tapaaminen tulevan itsesi hyväksi jonkun kanssa: lenkki, opiskeluhetki tai raha-asioiden läpikäynti.", minutes: 3 },
+    { tip: "Suunnitteluharha: aliarvioit aikaa lähes aina. Tuleva minä maksaa erotuksen stressinä ja kiireenä.", src: "frederick2002", action: "Kaksinkertaista yhden tämän viikon tehtävän aika-arvio ja varaa se kalenteriin.", minutes: 2 },
+    { tip: "Pre-mortem: kuvittele, että sitoumuksesi petti. Miksi? Tämä on WOOP:n este-vaihe käytännössä, ja se paljastaa heikot kohdat etukäteen.", src: "wang2021", action: "Kirjoita todennäköisin syy epäonnistumiseen ja yksi vastatoimi.", minutes: 3 },
+    { tip: "Ilo nyt ja hyöty myöhemmin eivät ole aina vastakkain. Etsi tekoja, jotka palvelevat molempia – niitä ei tarvitse pakottaa.", src: "milkman2014", action: "Tee tänään yksi asia, joka miellyttää sekä nykyistä että tulevaa sinua.", minutes: 10 },
+    { tip: "Rahassa tulevan itsen priorisointi on yksinkertaisinta: automaattinen siirto palkkapäivänä. Tulevaisuusyhteys ennustaa säästämistä tuloista riippumatta.", src: "hershfield2009", action: "Tarkista, että sinulla on yksi automaattinen siirto tulevalle itsellesi. Jos ei ole, tee pieni sellainen tänään.", minutes: 5 },
+    { tip: "Viikkokatsaus, puolimatka. \"Ole äänestäjä\" toimi paremmin kuin \"äänestä\": identiteetti ohjaa tekoja vahvemmin kuin tehtävälista.", src: "bryan2011", action: "Täydennä: \"Olen ihminen, joka ___ tulevan itsensä hyväksi.\" Kirjoita se paikkaan, jonka näet päivittäin.", minutes: 3 },
+    // Vaihe 4: Identiteetti ja arvot (36–48)
+    { tip: "Identiteetti rakentuu todisteista. Jokainen pieni teko on ääni sille, kuka olet – ja äänet lasketaan, ei täydellisyyttä.", src: "bryan2011", action: "Listaa kolme todistetta viime viikoilta siitä, että olet jo tulevan itsesi puolella.", minutes: 3 },
+    { tip: "\"Paras mahdollinen minä\": elämän kuvittelu kirjallisesti silloin, kun kaikki on mennyt hyvin, lisää myönteisiä tunteita ja motivaatiota.", src: "sheldon2006", action: "Kirjoita viisi minuuttia: elämäsi viiden vuoden päästä, kun kaikki meni hyvin. Ole konkreettinen.", minutes: 5 },
+    { tip: "Arvot ohjaavat, kun motivaatio loppuu. Tuleva minä ei tarvitse innostunutta nykyminää, vaan sellaisen, joka tietää mikä on tärkeää.", src: "sheldon2006", action: "Nimeä kolme arvoa. Missä tämän päivän teot näyttävät ne?", minutes: 3 },
+    { tip: "Tuleva minä on myös muiden tuleva minä. Maailman pisin onnellisuustutkimus löysi yhden vahvimman ennustajan: hyvät ihmissuhteet.", src: "waldinger2023", action: "Lähetä viesti ihmiselle, jonka haluat olevan elämässäsi kymmenen vuoden päästä.", minutes: 3 },
+    { tip: "Terveys on tulevan itsen pääomaa, ja uni sen halvin sijoitus. Aikaisempi nukkumaanmeno on teko, jonka tuleva minä huomaa jo huomenna.", src: "gardner2012", action: "Aseta nukkumaanmenon herätys 30 minuuttia ennen tavoiteaikaa.", minutes: 1 },
+    { tip: "Oppiminen kasvaa korkoa korolle: 15 minuuttia päivässä on 90 tuntia vuodessa. Tuleva minä on sen verran taitavampi.", src: "lally2010", action: "Tee kymmenen minuuttia jotakin, jota tuleva minä osaa paremmin kuin nykyinen.", minutes: 10 },
+    { tip: "Viikkokatsaus. Virstanpylväät tuovat tulevan itsen lähemmäksi. Ohjelmasta on jäljellä 24 päivää – sopiva etäisyys välitavoitteelle.", src: "peetz2013", action: "Aseta yksi välitavoite päivälle 56. Kirjaa se ylös, niin tarkistat sen silloin.", minutes: 3 },
+    { tip: "Takautuva perspektiivi: \"Kun olen 80 ja katson tätä päivää…\" Etäisyys pienentää nykyhetken houkutuksia oikeaan kokoonsa.", src: "hershfield2011", action: "Tee tämän päivän yksi päätös 80-vuotiaan itsesi silmin.", minutes: 2 },
+    { tip: "Ystävän perspektiivi: ystävälle neuvoisit lempeästi ja selkeästi. Tuleva minä on se ystävä.", src: "breines2012", action: "Kirjoita neuvo itsellesi kuin ystävälle ja noudata sitä tänään.", minutes: 3 },
+    { tip: "Yksi prosentti parempi päivässä. Tutkimus ei tue täydellisyyttä vaan toistuvuutta: pienet valinnat kasautuvat, kun ne toistuvat.", src: "wood2016", action: "Tee yksi yhden prosentin parannus: yksi porras, yksi sivu, yksi lasi vettä.", minutes: 2 },
+    { tip: "Tulevan itsen keho: liikunta parantaa mielialaa, unta ja aivoja. Kirje tulevalle itselle mitattiin juuri liikunnan lisääntymisenä.", src: "rutchick2018", action: "Kävele kymmenen minuuttia ilman puhelinta ja ajattele tulevaa itseäsi.", minutes: 10 },
+    { tip: "Digitaalinen tuleva minä: syötteisiin menevä aika on tulevan itsen aikaa. Rajat kannattaa asettaa etukäteen, ei hetkessä.", src: "duckworth2016", action: "Katso tämän päivän ruutuaika ja päätä yksi raja huomiselle.", minutes: 2 },
+    { tip: "Kiitollisuus tulevalta. Myönteinen tunne tulevaa itseä kohtaan vahvistaa yhteyttä häneen – ja yhteys vähentää lykkäämistä.", src: "blouin2015", action: "Kirjoita tulevan itsesi äänellä kaksi lausetta kiitosta tälle päivälle.", minutes: 2 },
+    // Vaihe 5: Kestävyys ja palautuminen (49–60)
+    { tip: "Viikkokatsaus. Itsemyötätunto lisää halua parantaa; itsekritiikki vähentää sitä. Ankaruus ei ole kurinalaisuutta.", src: "breines2012", action: "Jos jotain jäi väliin, sano: \"Tämä on inhimillistä. Mitä teen seuraavaksi?\" Kirjaa vastaus.", minutes: 2 },
+    { tip: "Tasanteet ovat normaaleja. Automaattisuuden käyrä on asymptoottinen: loppuvaiheessa muutos näkyy vähemmän, vaikka se jatkuu.", src: "lally2010", action: "Tee ankkuriteko tavallista pienempänä mutta täsmälleen samassa tilanteessa kuin aina.", minutes: 2 },
+    { tip: "Retkahdus ei ole paluu alkuun. \"Kaikki tai ei mitään\" -ajattelu ennustaa luovuttamista; suunniteltu palautuminen ennustaa jatkamista.", src: "marlatt2005", action: "Kirjoita: \"Kun retkahdan, niin ___\" – palautumisen ensimmäinen teko.", minutes: 2 },
+    { tip: "Uusi konteksti katkaisee tavat: loma, muutto, uusi työ. Tapa kannattaa suunnitella siirrettäväksi jo etukäteen.", src: "wood2016", action: "Kirjoita ankkuriteostasi matkaversio: mitä tarvitset, missä ja milloin.", minutes: 3 },
+    { tip: "Palkitse heti. Välitön pieni palkinto vahvistaa tapaa tehokkaammin kuin kaukainen hyöty – aivot oppivat siitä, mitä seuraa heti.", src: "wood2016", action: "Lisää tekoosi välitön mikropalkinto: rasti, kahvi tai suosikkibiisi.", minutes: 1 },
+    { tip: "Energian hallinta ennen ajanhallintaa. Tuleva minä tarvitsee levänneen nykyminän enemmän kuin väsyneen sankarin.", src: "duckworth2016", action: "Pidä yksi kymmenen minuutin tauko ilman ruutua.", minutes: 10 },
+    { tip: "Keskeneräisyyden sieto. Tuleva minä ei tarvitse täydellistä nykyminää, vaan sellaisen, joka jatkaa.", src: "breines2012", action: "Tee jokin asia riittävän hyvin ja lopeta ajoissa.", minutes: 5 },
+    { tip: "Viikkokatsaus ja välitavoite. Seuranta toimii parhaiten, kun edistymistä verrataan asetettuun tavoitteeseen.", src: "harkin2016", action: "Arvioi päivän 42 välitavoite asteikolla 0–10 ja kirjaa yksi opittu asia.", minutes: 3 },
+    { tip: "Tavat leviävät verkostoissa. Ympärilläsi olevat ihmiset muokkaavat todennäköisyyksiäsi enemmän kuin tahdonvoimasi.", src: "christakis2007", action: "Vietä hetki ihmisen kanssa, joka jo elää kuten tuleva minäsi.", minutes: 15 },
+    { tip: "Pienet automaattiset korotukset. Säästöaste nousi 3,5 %:sta 13,6 %:iin, kun korotukset sovittiin etukäteen ja pienissä askelissa.", src: "thaler2004", action: "Nosta yhtä automaatiota yhden yksikön: prosentti säästöä, viisi minuuttia liikuntaa tai vartti aikaisempi uni.", minutes: 3 },
+    { tip: "Muistiinpano tulevalle itselle: \"Hei, tässä mihin jäätiin.\" Uudelleenkäynnistyksen kitka on suurin syy lykkäämiseen.", src: "blouin2017", action: "Kirjoita työsi tai projektisi loppuun ensimmäinen askel huomiselle.", minutes: 2 },
+    { tip: "Kahden päivän sääntö loppuun asti: älä koskaan jätä väliin kahta peräkkäin. Yksi aukko on tilastoa, kaksi on alku uudelle tavalle.", src: "lally2010", action: "Katso viimeiset seitsemän päivää. Onko kahta peräkkäistä aukkoa? Jos on, tee suunnitelma ylihuomiselle jo nyt.", minutes: 2 },
+    // Vaihe 6: Vakiinnuta ja katso eteenpäin (61–66)
+    { tip: "66 päivää on keskiarvo, ei tae. Tavan ylläpito vaatii saman vihjeen jatkossakin – vihje on tavan koti.", src: "lally2010", action: "Päätä, mikä on ankkurisi pysyvä koti (aika + paikka) ohjelman jälkeen.", minutes: 2 },
+    { tip: "Yksi tapa kerrallaan. Tapojen rakentaminen peräkkäin on tehokkaampaa kuin monen aloittaminen yhtä aikaa.", src: "gardner2012", action: "Valitse seuraava yksi teko, jonka tuleva minä toivoisi. Vain yksi.", minutes: 3 },
+    { tip: "Viikkokatsaus. Katso koko matkaa: automaattisuuskäyrä kertoo enemmän kuin yksittäinen päivä.", src: "harkin2016", action: "Avaa Edistyminen-näkymä ja kirjoita kolme lausetta siitä, mikä muuttui.", minutes: 4 },
+    { tip: "Ympyrä sulkeutuu. Kirjeen lukeminen tulevan minän silmin vahvistaa yhteyttä molempiin suuntiin.", src: "rutchick2018", action: "Kirjoita muutama rivi vastausta kirjeellesi tulevan minän äänellä. Se avataan ylihuomenna.", minutes: 4 },
+    { tip: "Vähimmäisaika täyttyy. Tänään harjoitellaan tuen vähentämistä: teko ilman sovelluksen muistutusta.", src: "phillips2016", action: "Tee ankkuriteko ennen kuin avaat tämän sovelluksen. Merkitse se jälkikäteen.", minutes: 2 },
+    { tip: "Kirje avataan. Sinä olet nyt päivän 1 minän tuleva minä. Hän kirjoitti sinulle – lue, mitä hän toivoi.", src: "rutchick2018", action: "Lue kirjeesi. Kirjoita hänelle vastaus ja päätä, jatkatko vapaana jatkona.", minutes: 5 },
+  ];
+
+  // Painopistealueiden mikroteot (kiertävät)
+  const AREA_ACTIONS = {
+    terveys: [
+      "Juo lasi vettä heti herättyäsi.",
+      "Kävele portaat hissin sijaan tänään kerran.",
+      "Lisää yksi kasvis seuraavaan ateriaan.",
+      "Venyttele kolme minuuttia ennen nukkumaanmenoa.",
+      "Varaa rästissä oleva hammaslääkäri- tai terveystarkastusaika.",
+      "Tee kymmenen kyykkyä tai punnerrusta nyt heti.",
+      "Syö tänään yksi ateria ilman ruutua.",
+      "Laita puhelin lentotilaan 30 minuuttia ennen nukkumaanmenoa.",
+      "Kävele kymmenen minuuttia ulkona päivänvalossa.",
+      "Korvaa yksi sokerinen juoma vedellä.",
+      "Laita huomisen aamiainen valmiiksi jo illalla.",
+    ],
+    raha: [
+      "Tarkista tilisi saldo ja kirjaa se ylös – tieto vähentää pelkoa.",
+      "Siirrä viisi euroa säästötilille juuri nyt.",
+      "Peruuta yksi tilaus, jota et käytä.",
+      "Kirjaa tämän päivän kaikki ostokset.",
+      "Odota 24 tuntia ennen yhtä ei-välttämätöntä ostosta.",
+      "Laske, paljonko yksi toistuva pieni kulu maksaa vuodessa.",
+      "Lue viisi minuuttia sijoittamisen tai eläkesäästämisen perusteista.",
+      "Tee ostoslista ennen kauppaa ja pysy siinä.",
+      "Nosta automaattista säästöä prosentilla tai viidellä eurolla.",
+      "Tarkista yksi lasku tai tilaus: voiko sen kilpailuttaa?",
+      "Valmista huomisen lounas kotona.",
+    ],
+    oppiminen: [
+      "Lue kymmenen sivua kirjaa, joka opettaa jotain.",
+      "Opettele viisi uutta sanaa kieltä, jota haluat osata.",
+      "Selitä tänään oppimasi asia ääneen minuutissa, kuin opettaisit sen.",
+      "Katso kymmenen minuutin opetusvideo ja kirjoita kolme muistiinpanoa.",
+      "Harjoittele kymmenen minuuttia taitoa, jossa haluat olla parempi.",
+      "Tee yksi kertauskysymys eilen oppimastasi.",
+      "Kirjoita kysymys, johon haluat osata vastata kuukauden päästä.",
+      "Kuuntele yksi alasi podcast-jakso matkalla.",
+      "Kysy yhdeltä osaavalta ihmiseltä yksi kysymys.",
+      "Tee 15 minuuttia keskittynyttä työtä ilman ilmoituksia.",
+      "Kirjaa yksi virhe ja mitä opit siitä.",
+    ],
+    suhteet: [
+      "Lähetä viesti ihmiselle, johon et ole pitänyt yhteyttä.",
+      "Kuuntele yksi keskustelu tänään keskeyttämättä.",
+      "Kiitä jotakuta konkreettisesta asiasta.",
+      "Sovi tapaaminen ystävän kanssa ja laita se kalenteriin.",
+      "Soita perheenjäsenelle viideksi minuutiksi.",
+      "Pyydä anteeksi yhtä pientä asiaa, joka on jäänyt hiertämään.",
+      "Kysy läheiseltä: \"Miten sinulla oikeasti menee?\"",
+      "Laita puhelin pois yhden yhteisen hetken ajaksi.",
+      "Kirjoita kolme asiaa, joita arvostat yhdessä ihmisessä, ja kerro niistä yksi.",
+      "Tee pieni palvelus pyytämättä.",
+      "Suunnittele yksi yhteinen kokemus seuraavalle kuukaudelle.",
+    ],
+    tyo: [
+      "Kirjoita huomisen kolme tärkeintä tehtävää ennen kuin lopetat.",
+      "Tee 25 minuutin keskittynyt jakso vaikeimmasta asiasta.",
+      "Sulje ylimääräiset välilehdet ja ilmoitukset tunniksi.",
+      "Vastaa yhteen viestiin, jota olet lykännyt.",
+      "Pilko yksi iso tehtävä kolmeen pieneen askeleeseen.",
+      "Tee ensin se, mitä olet vältellyt.",
+      "Päivitä CV tai portfolio yhdellä rivillä.",
+      "Pyydä palautetta yhdestä työstäsi.",
+      "Siivoa työpiste viidessä minuutissa.",
+      "Kirjaa yksi asia, jonka opit työssä tänään.",
+      "Aseta selkeä lopetusaika tälle päivälle ja pidä se.",
+    ],
+    mieli: [
+      "Hengitä 4–7–8-rytmillä viisi kierrosta.",
+      "Kirjoita kolme asiaa, joista olet kiitollinen.",
+      "Mene nukkumaan 15 minuuttia aiemmin kuin eilen.",
+      "Vietä viisi minuuttia ilman ärsykkeitä: ei puhelinta, ei musiikkia.",
+      "Kirjoita huolet paperille ja sulje vihko.",
+      "Mene ulos kymmeneksi minuutiksi aamuvaloon.",
+      "Nimeä tunteesi yhdellä sanalla kolme kertaa päivän aikana.",
+      "Tee yksi asia hitaasti ja tarkkaavaisesti: kahvi, kävely tai tiskaus.",
+      "Pidä makuuhuone vain nukkumiseen tänä iltana.",
+      "Kirjoita yksi ystävällinen lause itsellesi.",
+      "Suunnittele yksi palauttava hetki huomiselle.",
+    ],
+  };
+
+  // Lempeät viestit, kun päiviä on jäänyt väliin (Lally 2010, Breines & Chen 2012, Marlatt 2005)
+  const COMEBACK = [
+    "Tervetuloa takaisin. Yksi väliin jäänyt päivä laski automaattisuutta tutkimuksessa alle puoli pistettä – ja se palautui nopeasti. Jatketaan siitä, mihin jäätiin.",
+    "Hyvä, että olet täällä. Retkahdus ei ole paluu alkuun. Tuleva minä ei laske aukkoja, vaan sen, että palasit.",
+    "Tauko ei mitätöi toistoja, jotka olet jo tehnyt. Tänään riittää pienin versio ankkuriteosta.",
+  ];
+
+  const WEEKLY_QUESTIONS = [
+    "Mikä teko tuntui tällä viikolla helpoimmalta? Miksi?",
+    "Missä tilanteessa nykyinen minä voitti tulevan minän? Mitä siitä opit?",
+    "Yksi jos–niin-suunnitelma ensi viikolle:",
+  ];
+
+  return { PROGRAM_DAYS, PHASES, AREAS, SOURCES, DAYS, AREA_ACTIONS, COMEBACK, WEEKLY_QUESTIONS };
+})();
